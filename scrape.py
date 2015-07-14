@@ -1,8 +1,11 @@
 import requests
+import json
+from datetime import datetime
 from HTMLParser import HTMLParser
 
+DATA_FOLDER = "./json"
+
 r = requests.get("https://pg.pf.uq.edu.au/embedded")
-print(r.status_code)
 
 OUTSIDE = 1
 IN_TABLE = 2
@@ -55,10 +58,24 @@ class ParkingParser(HTMLParser):
                 self.results[data] = [0,0]
                 self.key = data
             elif self.cell_index == 1:
-                self.results[self.key][0] = data
+                if data == 'Not Monitored':
+                    self.results[self.key] = [-1, -1]
+                else:
+                    self.results[self.key][0] = int(data)
             elif self.cell_index == 2:
-                self.results[self.key][1] = data
+                self.results[self.key][1] = int(data)
 
 parser = ParkingParser()
 parser.feed(r.text)
-print(parser.results)
+
+time = str(datetime.now())
+
+final = {
+        "data": parser.results,
+        "response": r.status_code, 
+        "timestamp": time
+        }
+
+f = open(DATA_FOLDER + "/" + time.replace(" ", "_") + ".json", "w")
+f.write(json.dumps(final))
+f.close()

@@ -1,7 +1,7 @@
 import requests
 import json
 from datetime import datetime
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 DATA_FOLDER = "./json"
 

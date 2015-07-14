@@ -12,6 +12,14 @@ IN_TABLE = 2
 IN_ROW = 3
 IN_CELL = 4
 
+def data_to_value(data):
+    if data.lower() == 'nearly full':
+        return -2
+    elif data.lower() == 'full':
+        return -3
+    else:
+        return int(data)
+
 class ParkingParser(HTMLParser):
     state = OUTSIDE
     results = {}
@@ -61,9 +69,9 @@ class ParkingParser(HTMLParser):
                 if data == 'Not Monitored':
                     self.results[self.key] = [-1, -1]
                 else:
-                    self.results[self.key][0] = int(data)
+                    self.results[self.key][0] = data_to_value(data)
             elif self.cell_index == 2:
-                self.results[self.key][1] = int(data)
+                self.results[self.key][1] = data_to_value(data)
 
 parser = ParkingParser()
 parser.feed(r.text)
